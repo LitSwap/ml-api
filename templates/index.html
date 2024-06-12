@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #recommendations {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Recommendation System</h1>
+    <form id="recommendationForm">
+        <label for="favoriteBooks">Enter your favorite books (comma separated):</label><br>
+        <input type="text" id="favoriteBooks" name="favoriteBooks" required><br><br>
+        <label for="nRecommendations">Number of recommendations:</label><br>
+        <input type="number" id="nRecommendations" name="nRecommendations" value="5" required><br><br>
+        <button type="submit">Get Recommendations</button>
+    </form>
+    <div id="recommendations"></div>
+
+    <script>
+        document.getElementById('recommendationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const favoriteBooks = document.getElementById('favoriteBooks').value.split(',').map(book => book.trim());
+            const nRecommendations = parseInt(document.getElementById('nRecommendations').value);
+
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ favorite_books: favoriteBooks, n_recommendations: nRecommendations })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const recommendationsDiv = document.getElementById('recommendations');
+                recommendationsDiv.innerHTML = '<h2>Recommended Books:</h2><ul>' + data.map(book => `<li>${book}</li>`).join('') + '</ul>';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
