@@ -19,9 +19,9 @@ API Starter built using Flask & Swagger
 Install Python 3.9.19
 
 Install Python Package:
-
+```
 pip install -r requirements.txt
-
+```
 ## 🔧 Running the app <a name = "run"></a>
 
 run:
