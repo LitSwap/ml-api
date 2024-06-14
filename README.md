@@ -1,4 +1,4 @@
-<h3 align="center">Express Rest API Starter</h3>
+<h3 align="center">Flask API Starter</h3>
 
 ---
 
