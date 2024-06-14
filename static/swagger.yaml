@@ -1,0 +1,48 @@
+openapi: 3.0.1
+info:
+  title: Book Recommendation API
+  version: 1.0.0
+paths:
+  # /:
+  #   get:
+  #     summary: Home Page
+  #     responses:
+  #       "200":
+  #         description: Renders the index.html page
+  #         content:
+  #           text/html:
+  #             schema:
+  #               type: string
+  /recommend:
+    post:
+      summary: Recommend Books
+      requestBody:
+        description: Comma-separated list of favorite book ISBN
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                favorite_books:
+                  type: array
+                  items:
+                    type: string
+                n_recommendations:
+                  type: integer
+                  default: 5
+            example:
+              favorite_books: ["0440234743", "0922066728", "0440295556"]
+              n_recommendations: 5
+      responses:
+        "200":
+          description: Comma-separated list of favorite book ISBN
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommended_books:
+                    type: array
+                    items:
+                      type: string
