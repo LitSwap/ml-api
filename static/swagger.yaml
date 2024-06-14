@@ -15,7 +15,7 @@ paths:
   #               type: string
   /recommend:
     post:
-      summary: Recommend Books
+      summary: Get Recommended Books by ISBN
       requestBody:
         description: Comma-separated list of favorite book ISBN
         required: true
