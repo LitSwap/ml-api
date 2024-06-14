@@ -1,0 +1,5 @@
+Flask
+flask-swagger-ui
+pandas
+scikit-learn
+numpy
