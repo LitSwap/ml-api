@@ -3,3 +3,4 @@ flask-swagger-ui
 pandas
 scikit-learn
 numpy
+requests
