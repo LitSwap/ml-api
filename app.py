@@ -8,44 +8,7 @@ import requests
 
 app = Flask(__name__)
 
-response = requests.get('https://litswap-project.et.r.appspot.com/booksnoauth')
 
-try:
-    response_json = response.json()
-except requests.exceptions.JSONDecodeError:
-    response_json = []
-    print("Response is not in JSON format.")
-    print("Status code:", response.status_code)
-
-unique_books = {}
-for book in response_json:
-    isbn = book['isbn']
-    if isbn not in unique_books:
-        year = book['year'].split("-")[0] if 'year' in book and book['year'] and book['year'].isdigit() else 'Tahun Tidak Tersedia'
-        unique_books[isbn] = {
-            'title': book['title'],
-            'author': book['author'],
-            'genre': book['genre'],
-            'year': str(year)  
-        }
-
-# Convert the unique_books dictionary to a DataFrame
-df = pd.DataFrame.from_dict(unique_books, orient='index')
-
-# Preprocess data
-label_encoder_author = LabelEncoder()
-label_encoder_genre = LabelEncoder()
-
-df['author_encoded'] = label_encoder_author.fit_transform(df['author'])
-df['genre_encoded'] = label_encoder_genre.fit_transform(df['genre'])
-
-df['year'] = df['year'].apply(lambda x: int(x) if x.isdigit() else -1)
-
-features = df[['author_encoded', 'genre_encoded', 'year']]
-
-# Fit k-NN model
-knn = NearestNeighbors(n_neighbors=5, algorithm='auto')
-knn.fit(features)
 
 @app.route('/')
 def index():
@@ -53,6 +16,44 @@ def index():
 
 @app.route('/recommend', methods=['POST'])
 def recommend_books():
+    response = requests.get('https://litswap-project.et.r.appspot.com/booksnoauth')
+
+    try:
+        response_json = response.json()
+    except requests.exceptions.JSONDecodeError:
+        response_json = []
+        print("Response is not in JSON format.")
+        print("Status code:", response.status_code)
+
+    unique_books = {}
+    for book in response_json:
+        isbn = book['isbn']
+        if isbn not in unique_books:
+            year = book['year'].split("-")[0] if 'year' in book and book['year'] and book['year'].isdigit() else 'Tahun Tidak Tersedia'
+            unique_books[isbn] = {
+                'title': book['title'],
+                'author': book['author'],
+                'genre': book['genre'],
+                'year': str(year)  
+            }
+
+    # Convert the unique_books dictionary to a DataFrame
+    df = pd.DataFrame.from_dict(unique_books, orient='index')
+
+    # Preprocess data
+    label_encoder_author = LabelEncoder()
+    label_encoder_genre = LabelEncoder()
+
+    df['author_encoded'] = label_encoder_author.fit_transform(df['author'])
+    df['genre_encoded'] = label_encoder_genre.fit_transform(df['genre'])
+
+    df['year'] = df['year'].apply(lambda x: int(x) if x.isdigit() else -1)
+
+    features = df[['author_encoded', 'genre_encoded', 'year']]
+
+    # Fit k-NN model
+    knn = NearestNeighbors(n_neighbors=5, algorithm='auto')
+    knn.fit(features)
     data = request.json
     if not data or 'favorite_books' not in data:
         return jsonify({'error': 'Invalid input'}), 400
